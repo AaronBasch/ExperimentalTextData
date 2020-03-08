@@ -1,0 +1,72 @@
+'''
+functions:
+-- addToDict = add unique word to dict as a dict:
+    dict = {word:{1:[word,word], 2:[word...}}
+-- appToWord, adds word to dict of word correpsonding to the amount of total times word appears near word.
+'''
+class TextRate:
+    """class uses functions to store data on a text including which are the most common words and which words are most commonly around each word"""
+    def __init__(self):
+        self.text = []
+        self.dictionary = {}
+        self.counter = {1:[]}
+
+    def addToDict(self, word):
+        if word not in self.dictionary:
+            self.dictionary[word] = {1:[]}
+            self.counter[1].append(word)
+        else:
+            self.appendToCounter(word,self.counter)
+    
+    def appendToCounter(self, string, numDict):
+        inLst = False
+        for num in numDict:
+            if string in numDict[num]:
+                inLst = True
+                try:
+                    numDict[num+1].append(string)
+                    numDict[num].remove(string)
+                    break
+                except:
+                    numDict[num+1] = [string]
+                    numDict[num].remove(string)
+                    break
+        if not inLst:
+            numDict[1].append(string)
+    
+    def parse(self, text):
+        '''
+        text is list of words
+        dictionary is empty dict
+        counter is a dict with {1:[]}
+        '''
+        self.text = text
+        for word in self.text:
+            self.addToDict(word)
+            for r in range(1,3):
+                try:
+                    index = self.text.index(word)
+                    string = self.text[index - r] ## some words earlier
+                    self.appendToCounter(string, self.dictionary[word])
+                    string = self.text[index + r] ## some words after
+                    self.appendToCounter(string, self.dictionary[word])
+                except:
+                    pass
+
+        print(self.bestWords(self.counter))
+            
+    def bestWords(self, numDict):
+        """ returns list of most used words of either counter of word in dictionary """
+        maxNum = 0
+        topWordList = []
+        counter = 0
+        for num in numDict:
+            if num > maxNum:
+                maxNum = num
+        for i in range(maxNum,0,-1):
+            if counter > 7:
+                return topWordList
+            if len(numDict[i])>0:
+                topWordList.append({i:numDict[i]})
+                counter += 1
+                
